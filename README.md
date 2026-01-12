@@ -1,9 +1,10 @@
 # RevenueCat
 
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/mhemmings/revenuecat)](https://pkg.go.dev/github.com/mhemmings/revenuecat)
-[![Test](https://github.com/mhemmings/revenuecat/workflows/Test/badge.svg?branch=master)](https://github.com/mhemmings/revenuecat/actions?query=workflow%3ATest)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/claywarren/revenuecat)](https://pkg.go.dev/github.com/claywarren/revenuecat)
+[![Test](https://github.com/claywarren/revenuecat/workflows/Test/badge.svg?branch=master)](https://github.com/claywarren/revenuecat/actions?query=workflow%3ATest)
 
 Go package for interacting with the [RevenueCat API](https://docs.revenuecat.com/reference).
+Inspired by [the official TS/JS client](https://github.com/RevenueCat/purchases-js)
 
 ## Usage
 
@@ -15,7 +16,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/mhemmings/revenuecat"
+	"github.com/claywarren/revenuecat"
 )
 
 func main() {
@@ -37,7 +38,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mhemmings/revenuecat"
+	"github.com/claywarren/revenuecat"
 )
 
 func main() {
@@ -56,7 +57,7 @@ func main() {
 
 ### Documentation
 
-For full documentation, see [pkg.go.dev/github.com/mhemmings/revenuecat](https://pkg.go.dev/github.com/mhemmings/revenuecat)
+For full documentation, see [pkg.go.dev/github.com/claywarren/revenuecat](https://pkg.go.dev/github.com/claywarren/revenuecat)
 
 
 #### func (*Client) AddUserAttribution
@@ -159,4 +160,3 @@ func (c *Client) UpdateSubscriberAttributes(userID string, attributes map[string
 ```
 UpdateSubscriberAttributes updates subscriber attributes for a user.
 https://docs.revenuecat.com/reference#update-subscriber-attributes
-
