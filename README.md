@@ -6,6 +6,14 @@
 Go package for interacting with the [RevenueCat API](https://docs.revenuecat.com/reference).
 Inspired by [the official TS/JS client](https://github.com/RevenueCat/purchases-js)
 
+## Installation
+
+To install the RevenueCat Go SDK, use `go get`:
+
+```bash
+go get github.com/claywarren/revenuecat
+```
+
 ## Usage
 
 ### Examples
