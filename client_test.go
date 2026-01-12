@@ -3,7 +3,7 @@ package revenuecat
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 	"time"
@@ -14,7 +14,7 @@ type mockClient struct {
 	doer    func(req *http.Request) (*http.Response, error)
 }
 
-func newMockClient(t *testing.T, statusCode int, body interface{}, returnErr error) *mockClient {
+func newMockClient(t *testing.T, statusCode int, body interface{}, returnErr error) *mockClient { //nolint:unparam
 	t.Helper()
 
 	c := &mockClient{}
@@ -26,7 +26,7 @@ func newMockClient(t *testing.T, statusCode int, body interface{}, returnErr err
 	c.doer = func(req *http.Request) (*http.Response, error) {
 		resp := &http.Response{
 			StatusCode: statusCode,
-			Body:       ioutil.NopCloser(bytes.NewReader(bodyBytes)),
+			Body:       io.NopCloser(bytes.NewReader(bodyBytes)),
 		}
 		return resp, returnErr
 	}
@@ -70,7 +70,7 @@ func (c *mockClient) expectXIsSandbox(t *testing.T, expected string) {
 
 func (c *mockClient) expectBody(t *testing.T, expected string) {
 	t.Helper()
-	bodyBytes, err := ioutil.ReadAll(c.request.Body)
+	bodyBytes, err := io.ReadAll(c.request.Body)
 	if err != nil {
 		t.Fatalf("error reading request body: %v", err)
 	}

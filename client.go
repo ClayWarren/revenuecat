@@ -90,7 +90,7 @@ func (c *Client) call(method, path string, reqBody interface{}, platform string,
 	if err != nil {
 		return fmt.Errorf("error making request: %v", err)
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 	if resp.StatusCode >= 400 {
 		var errResp Error
 		err = json.NewDecoder(resp.Body).Decode(&errResp)

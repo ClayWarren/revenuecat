@@ -1,0 +1,11 @@
+{
+    "go.useLanguageServer": true,
+    "editor.formatOnSave": true,
+    "go.lintOnSave": "package",
+    "go.vetOnSave": "package",
+    "go.testOnSave": true,
+    "go.lintTool": "golangci-lint",
+    "go.lintFlags": [
+        "--fast"
+    ]
+}
