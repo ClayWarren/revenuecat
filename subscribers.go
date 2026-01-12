@@ -11,6 +11,7 @@ type Subscriber struct {
 	OriginalApplicationVersion *string                        `json:"original_application_version"`
 	FirstSeen                  time.Time                      `json:"first_seen"`
 	LastSeen                   time.Time                      `json:"last_seen"`
+	ManagementURL              *string                        `json:"management_url"`
 	Entitlements               map[string]Entitlement         `json:"entitlements"`
 	Subscriptions              map[string]Subscription        `json:"subscriptions"`
 	NonSubscriptions           map[string][]NonSubscription   `json:"non_subscriptions"`
@@ -19,7 +20,7 @@ type Subscriber struct {
 
 // https://docs.revenuecat.com/reference#the-entitlement-object
 type Entitlement struct {
-	ExpiresDate            time.Time  `json:"expires_date"`
+	ExpiresDate            *time.Time `json:"expires_date"`
 	GracePeriodExpiresDate *time.Time `json:"grace_period_expires_date"`
 	PurchaseDate           time.Time  `json:"purchase_date"`
 	ProductIdentifier      string     `json:"product_identifier"`
@@ -94,7 +95,38 @@ func (s Subscriber) IsEntitledTo(entitlement string) bool {
 	if !ok {
 		return false
 	}
+	if e.ExpiresDate == nil {
+		return true
+	}
 	return !e.ExpiresDate.Before(time.Now())
+}
+
+// ActiveSubscriptions returns the identifiers of all active subscriptions.
+func (s Subscriber) ActiveSubscriptions() []string {
+	var active []string
+	now := time.Now()
+	for id, sub := range s.Subscriptions {
+		if sub.ExpiresDate == nil || !sub.ExpiresDate.Before(now) {
+			active = append(active, id)
+		}
+	}
+	return active
+}
+
+// AllPurchasedProductIdentifiers returns the identifiers of all products ever purchased.
+func (s Subscriber) AllPurchasedProductIdentifiers() []string {
+	idsMap := make(map[string]struct{})
+	for id := range s.Subscriptions {
+		idsMap[id] = struct{}{}
+	}
+	for id := range s.NonSubscriptions {
+		idsMap[id] = struct{}{}
+	}
+	var ids []string
+	for id := range idsMap {
+		ids = append(ids, id)
+	}
+	return ids
 }
 
 // GetSubscriber gets the latest subscriber info or creates one if it doesn't exist.

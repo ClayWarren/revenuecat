@@ -42,10 +42,17 @@ func TestGetOfferings(t *testing.T) {
 			{
 				Description: "offering 1",
 				Identifier:  "offering_1",
+				Metadata: map[string]interface{}{
+					"foo": "bar",
+				},
 				Packages: []Package{
 					{
 						Identifier:                "package_1",
 						PlatformProductIdentifier: "prod_1",
+						PackageType:               MonthlyPackageType,
+						Metadata: map[string]interface{}{
+							"baz": "qux",
+						},
 					},
 				},
 			},
@@ -56,6 +63,7 @@ func TestGetOfferings(t *testing.T) {
 					{
 						Identifier:                "package_2",
 						PlatformProductIdentifier: "prod_2",
+						PackageType:               AnnualPackageType,
 					},
 				},
 			},
@@ -80,7 +88,15 @@ func TestGetOfferings(t *testing.T) {
 	}
 
 	if offerings.Current.Identifier != "offering_1" {
-		t.Errorf("expected current offering to be 'offering_1', got %s", offerings.Current.Identifier)
+		t.Errorf("expected current offering to 'offering_1', got %s", offerings.Current.Identifier)
+	}
+
+	if offerings.Current.Metadata["foo"] != "bar" {
+		t.Errorf("expected metadata 'foo' to be 'bar', got %v", offerings.Current.Metadata["foo"])
+	}
+
+	if offerings.Current.Packages[0].Metadata["baz"] != "qux" {
+		t.Errorf("expected package metadata 'baz' to be 'qux', got %v", offerings.Current.Packages[0].Metadata["baz"])
 	}
 
 	if _, ok := offerings.All["offering_2"]; !ok {

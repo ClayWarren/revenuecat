@@ -137,6 +137,10 @@ func TestSubscriberAttributeUnmarshalJSON(t *testing.T) {
 }
 
 func TestSubscriberIsEntitledTo(t *testing.T) {
+	now := time.Now()
+	expired := now.Add(-time.Hour)
+	active := now.Add(time.Hour)
+
 	tests := []struct {
 		name        string
 		sub         map[string]Entitlement
@@ -163,7 +167,7 @@ func TestSubscriberIsEntitledTo(t *testing.T) {
 		name: "expired",
 		sub: map[string]Entitlement{
 			"test": {
-				ExpiresDate: time.Now().Add(-time.Hour),
+				ExpiresDate: &expired,
 			},
 		},
 		entitlement: "test",
@@ -172,7 +176,16 @@ func TestSubscriberIsEntitledTo(t *testing.T) {
 		name: "subscribed",
 		sub: map[string]Entitlement{
 			"test": {
-				ExpiresDate: time.Now().Add(time.Hour),
+				ExpiresDate: &active,
+			},
+		},
+		entitlement: "test",
+		expected:    true,
+	}, {
+		name: "lifetime",
+		sub: map[string]Entitlement{
+			"test": {
+				ExpiresDate: nil,
 			},
 		},
 		entitlement: "test",
@@ -187,5 +200,77 @@ func TestSubscriberIsEntitledTo(t *testing.T) {
 				t.Errorf("got: %v, expected %v", res, test.expected)
 			}
 		})
+	}
+}
+
+func TestActiveSubscriptions(t *testing.T) {
+	now := time.Now()
+	expired := now.Add(-time.Hour)
+	active := now.Add(time.Hour)
+
+	sub := Subscriber{
+		Subscriptions: map[string]Subscription{
+			"expired": {
+				ExpiresDate: &expired,
+			},
+			"active": {
+				ExpiresDate: &active,
+			},
+			"lifetime": {
+				ExpiresDate: nil,
+			},
+		},
+	}
+
+	res := sub.ActiveSubscriptions()
+	if len(res) != 2 {
+		t.Errorf("expected 2 active subscriptions, got %d", len(res))
+	}
+
+	foundActive := false
+	foundLifetime := false
+	for _, id := range res {
+		if id == "active" {
+			foundActive = true
+		}
+		if id == "lifetime" {
+			foundLifetime = true
+		}
+	}
+
+	if !foundActive || !foundLifetime {
+		t.Errorf("expected 'active' and 'lifetime' to be in active subscriptions, got %v", res)
+	}
+}
+
+func TestAllPurchasedProductIdentifiers(t *testing.T) {
+	sub := Subscriber{
+		Subscriptions: map[string]Subscription{
+			"sub1": {},
+		},
+		NonSubscriptions: map[string][]NonSubscription{
+			"non1": {{ID: "abc"}},
+			"sub1": {{ID: "def"}}, // Same ID as subscription should be de-duped
+		},
+	}
+
+	res := sub.AllPurchasedProductIdentifiers()
+	if len(res) != 2 {
+		t.Errorf("expected 2 product identifiers, got %d", len(res))
+	}
+
+	foundSub1 := false
+	foundNon1 := false
+	for _, id := range res {
+		if id == "sub1" {
+			foundSub1 = true
+		}
+		if id == "non1" {
+			foundNon1 = true
+		}
+	}
+
+	if !foundSub1 || !foundNon1 {
+		t.Errorf("expected 'sub1' and 'non1' to be in product identifiers, got %v", res)
 	}
 }

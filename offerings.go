@@ -56,13 +56,32 @@ type Offerings struct {
 
 // Offering holds an offering.
 type Offering struct {
-	Description string    `json:"description"`
-	Identifier  string    `json:"identifier"`
-	Packages    []Package `json:"packages"`
+	Description string                 `json:"description"`
+	Identifier  string                 `json:"identifier"`
+	Packages    []Package              `json:"packages"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // Package holds a package.
 type Package struct {
-	Identifier                string `json:"identifier"`
-	PlatformProductIdentifier string `json:"platform_product_identifier"`
+	Identifier                string                 `json:"identifier"`
+	PlatformProductIdentifier string                 `json:"platform_product_identifier"`
+	PackageType               PackageType            `json:"package_type"`
+	Metadata                  map[string]interface{} `json:"metadata,omitempty"`
 }
+
+// PackageType holds the predefined values for a package type.
+type PackageType string
+
+// https://docs.revenuecat.com/docs/displaying-products#package-types
+const (
+	UnknownPackageType    PackageType = "UNKNOWN"
+	CustomPackageType     PackageType = "CUSTOM"
+	LifetimePackageType   PackageType = "LIFETIME"
+	AnnualPackageType     PackageType = "ANNUAL"
+	SixMonthPackageType   PackageType = "SIX_MONTH"
+	ThreeMonthPackageType PackageType = "THREE_MONTH"
+	TwoMonthPackageType   PackageType = "TWO_MONTH"
+	MonthlyPackageType    PackageType = "MONTHLY"
+	WeeklyPackageType     PackageType = "WEEKLY"
+)
